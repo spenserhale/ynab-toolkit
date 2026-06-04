@@ -142,3 +142,16 @@ export const CategoryGroupSchema = z.object({
 });
 
 export type CategoryGroup = z.infer<typeof CategoryGroupSchema>;
+
+// ---------------------------------------------------------------------------
+// Payee schemas
+// ---------------------------------------------------------------------------
+
+export const PayeeSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  transfer_account_id: z.string().optional().nullable(),
+  deleted: z.boolean(),
+});
+
+export type Payee = z.infer<typeof PayeeSchema>;

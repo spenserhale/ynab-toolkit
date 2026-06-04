@@ -8,6 +8,7 @@ import type {
   Account,
   Category,
   CategoryGroup,
+  Payee,
 } from "./types.js";
 import {
   YnabConfigSchema,
@@ -171,5 +172,28 @@ export class YnabClient {
       { month_category: { budgeted } }
     );
     return data.category;
+  }
+
+  // -------------------------------------------------------------------------
+  // Payees  (GET /plans/{id}/payees, GET /plans/{id}/payees/{id})
+  // -------------------------------------------------------------------------
+
+  async listPayees(
+    budgetId: string,
+    lastKnowledgeOfServer?: number
+  ): Promise<{ payees: Payee[]; server_knowledge: number }> {
+    const query =
+      lastKnowledgeOfServer !== undefined
+        ? `?last_knowledge_of_server=${lastKnowledgeOfServer}`
+        : "";
+    return this.request("GET", `/plans/${budgetId}/payees${query}`);
+  }
+
+  async getPayee(budgetId: string, payeeId: string): Promise<Payee> {
+    const data = await this.request<{ payee: Payee }>(
+      "GET",
+      `/plans/${budgetId}/payees/${payeeId}`
+    );
+    return data.payee;
   }
 }

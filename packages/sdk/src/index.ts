@@ -12,6 +12,7 @@ export type {
   Account,
   Category,
   CategoryGroup,
+  Payee,
 } from "./types.js";
 export {
   YnabConfigSchema,
@@ -24,4 +25,5 @@ export {
   AccountTypeSchema,
   CategorySchema,
   CategoryGroupSchema,
+  PayeeSchema,
 } from "./types.js";
