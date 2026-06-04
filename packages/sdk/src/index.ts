@@ -8,6 +8,7 @@ export type {
   CreateResourceParams,
   PaginatedResponse,
   ErrorResponse,
+  BudgetSummary,
 } from "./types.js";
 export {
   YnabConfigSchema,
@@ -15,4 +16,5 @@ export {
   ListResourcesParamsSchema,
   CreateResourceParamsSchema,
   ErrorResponseSchema,
+  BudgetSummarySchema,
 } from "./types.js";

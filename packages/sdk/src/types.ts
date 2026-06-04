@@ -65,3 +65,17 @@ export const ErrorResponseSchema = z.object({
 });
 
 export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;
+
+// ---------------------------------------------------------------------------
+// Budget schemas
+// ---------------------------------------------------------------------------
+
+export const BudgetSummarySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  last_modified_on: z.string().optional(),
+  first_month: z.string().optional(),
+  last_month: z.string().optional(),
+});
+
+export type BudgetSummary = z.infer<typeof BudgetSummarySchema>;

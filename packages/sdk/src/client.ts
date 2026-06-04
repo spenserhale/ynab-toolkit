@@ -4,6 +4,7 @@ import type {
   ListResourcesParams,
   CreateResourceParams,
   PaginatedResponse,
+  BudgetSummary,
 } from "./types.js";
 import {
   YnabConfigSchema,
@@ -84,5 +85,27 @@ export class YnabClient {
 
   async deleteResource(id: string): Promise<void> {
     await this.request("DELETE", `/resources/${id}`);
+  }
+
+  // -------------------------------------------------------------------------
+  // Budgets  (GET /plans, GET /plans/{plan_id})
+  // -------------------------------------------------------------------------
+
+  async listBudgets(
+    lastKnowledgeOfServer?: number
+  ): Promise<{ budgets: BudgetSummary[]; server_knowledge: number }> {
+    const query =
+      lastKnowledgeOfServer !== undefined
+        ? `?last_knowledge_of_server=${lastKnowledgeOfServer}`
+        : "";
+    return this.request("GET", `/plans${query}`);
+  }
+
+  async getBudget(budgetId: string): Promise<BudgetSummary> {
+    const data = await this.request<{
+      budget: BudgetSummary;
+      server_knowledge: number;
+    }>("GET", `/plans/${budgetId}`);
+    return data.budget;
   }
 }
