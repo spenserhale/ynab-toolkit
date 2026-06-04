@@ -1,9 +1,5 @@
 import type {
   YnabConfig,
-  Resource,
-  ListResourcesParams,
-  CreateResourceParams,
-  PaginatedResponse,
   BudgetSummary,
   Account,
   Category,
@@ -15,12 +11,7 @@ import type {
   MonthSummary,
   MonthDetail,
 } from "./types.js";
-import {
-  YnabConfigSchema,
-  ResourceSchema,
-  PaginatedResponseSchema,
-  ErrorResponseSchema,
-} from "./types.js";
+import { YnabConfigSchema, ErrorResponseSchema } from "./types.js";
 import {
   YnabError,
   YnabAuthError,
@@ -68,32 +59,6 @@ export class YnabClient {
 
     const json = (await res.json()) as { data: T };
     return json.data;
-  }
-
-  // -------------------------------------------------------------------------
-  // Resource operations -- add your own here
-  // -------------------------------------------------------------------------
-
-  async listResources(
-    params: ListResourcesParams = { page: 1, limit: 20 }
-  ): Promise<PaginatedResponse<Resource>> {
-    const query = new URLSearchParams({
-      page: String(params.page),
-      limit: String(params.limit),
-    });
-    return this.request("GET", `/resources?${query}`);
-  }
-
-  async getResource(id: string): Promise<Resource> {
-    return this.request("GET", `/resources/${id}`);
-  }
-
-  async createResource(params: CreateResourceParams): Promise<Resource> {
-    return this.request("POST", "/resources", params);
-  }
-
-  async deleteResource(id: string): Promise<void> {
-    await this.request("DELETE", `/resources/${id}`);
   }
 
   // -------------------------------------------------------------------------
