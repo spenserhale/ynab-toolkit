@@ -155,3 +155,58 @@ export const PayeeSchema = z.object({
 });
 
 export type Payee = z.infer<typeof PayeeSchema>;
+
+// ---------------------------------------------------------------------------
+// Transaction schemas
+// ---------------------------------------------------------------------------
+
+export const TransactionClearedStatusSchema = z.enum(["cleared", "uncleared", "reconciled"]);
+export type TransactionClearedStatus = z.infer<typeof TransactionClearedStatusSchema>;
+
+export const SubTransactionSchema = z.object({
+  id: z.string(),
+  transaction_id: z.string(),
+  amount: z.number().int(),
+  memo: z.string().optional().nullable(),
+  payee_id: z.string().optional().nullable(),
+  payee_name: z.string().optional().nullable(),
+  category_id: z.string().optional().nullable(),
+  category_name: z.string().optional().nullable(),
+  deleted: z.boolean(),
+});
+
+export type SubTransaction = z.infer<typeof SubTransactionSchema>;
+
+export const TransactionSchema = z.object({
+  id: z.string(),
+  date: z.string(),
+  amount: z.number().int(),
+  memo: z.string().optional().nullable(),
+  cleared: TransactionClearedStatusSchema,
+  approved: z.boolean(),
+  account_id: z.string(),
+  payee_id: z.string().optional().nullable(),
+  category_id: z.string().optional().nullable(),
+  transfer_account_id: z.string().optional().nullable(),
+  import_id: z.string().optional().nullable(),
+  deleted: z.boolean(),
+  account_name: z.string(),
+  subtransactions: z.array(SubTransactionSchema),
+});
+
+export type Transaction = z.infer<typeof TransactionSchema>;
+
+export const SaveTransactionParamsSchema = z.object({
+  account_id: z.string(),
+  date: z.string(),
+  amount: z.number().int(),
+  payee_id: z.string().optional().nullable(),
+  payee_name: z.string().optional().nullable(),
+  category_id: z.string().optional().nullable(),
+  memo: z.string().optional().nullable(),
+  cleared: TransactionClearedStatusSchema.optional(),
+  approved: z.boolean().optional(),
+  import_id: z.string().optional().nullable(),
+});
+
+export type SaveTransactionParams = z.infer<typeof SaveTransactionParamsSchema>;

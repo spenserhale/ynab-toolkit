@@ -9,6 +9,8 @@ import type {
   Category,
   CategoryGroup,
   Payee,
+  Transaction,
+  SaveTransactionParams,
 } from "./types.js";
 import {
   YnabConfigSchema,
@@ -195,5 +197,71 @@ export class YnabClient {
       `/plans/${budgetId}/payees/${payeeId}`
     );
     return data.payee;
+  }
+
+  // -------------------------------------------------------------------------
+  // Transactions  (GET/POST/PUT/DELETE /plans/{id}/transactions[/{id}])
+  // -------------------------------------------------------------------------
+
+  async listTransactions(
+    budgetId: string,
+    params?: { lastKnowledgeOfServer?: number; sinceDate?: string }
+  ): Promise<{ transactions: Transaction[]; server_knowledge: number }> {
+    const query = new URLSearchParams();
+    if (params?.lastKnowledgeOfServer !== undefined) {
+      query.set("last_knowledge_of_server", String(params.lastKnowledgeOfServer));
+    }
+    if (params?.sinceDate !== undefined) {
+      query.set("since_date", params.sinceDate);
+    }
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return this.request("GET", `/plans/${budgetId}/transactions${qs}`);
+  }
+
+  async getTransaction(budgetId: string, transactionId: string): Promise<Transaction> {
+    const data = await this.request<{ transaction: Transaction }>(
+      "GET",
+      `/plans/${budgetId}/transactions/${transactionId}`
+    );
+    return data.transaction;
+  }
+
+  async createTransaction(
+    budgetId: string,
+    transaction: SaveTransactionParams
+  ): Promise<{ transaction: Transaction; duplicate_import_ids: string[] }> {
+    return this.request("POST", `/plans/${budgetId}/transactions`, {
+      transaction,
+    });
+  }
+
+  async createTransactions(
+    budgetId: string,
+    transactions: SaveTransactionParams[]
+  ): Promise<{ transaction_ids: string[]; duplicate_import_ids: string[] }> {
+    return this.request("POST", `/plans/${budgetId}/transactions`, {
+      transactions,
+    });
+  }
+
+  async updateTransaction(
+    budgetId: string,
+    transactionId: string,
+    transaction: SaveTransactionParams
+  ): Promise<Transaction> {
+    const data = await this.request<{ transaction: Transaction }>(
+      "PUT",
+      `/plans/${budgetId}/transactions/${transactionId}`,
+      { transaction }
+    );
+    return data.transaction;
+  }
+
+  async deleteTransaction(budgetId: string, transactionId: string): Promise<Transaction> {
+    const data = await this.request<{ transaction: Transaction }>(
+      "DELETE",
+      `/plans/${budgetId}/transactions/${transactionId}`
+    );
+    return data.transaction;
   }
 }

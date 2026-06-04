@@ -13,6 +13,10 @@ export type {
   Category,
   CategoryGroup,
   Payee,
+  Transaction,
+  SubTransaction,
+  SaveTransactionParams,
+  TransactionClearedStatus,
 } from "./types.js";
 export {
   YnabConfigSchema,
@@ -26,4 +30,8 @@ export {
   CategorySchema,
   CategoryGroupSchema,
   PayeeSchema,
+  TransactionSchema,
+  SubTransactionSchema,
+  SaveTransactionParamsSchema,
+  TransactionClearedStatusSchema,
 } from "./types.js";
