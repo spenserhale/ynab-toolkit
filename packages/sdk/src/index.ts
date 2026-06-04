@@ -17,6 +17,8 @@ export type {
   SubTransaction,
   SaveTransactionParams,
   TransactionClearedStatus,
+  ScheduledTransaction,
+  ScheduledTransactionFrequency,
 } from "./types.js";
 export {
   YnabConfigSchema,
@@ -34,4 +36,6 @@ export {
   SubTransactionSchema,
   SaveTransactionParamsSchema,
   TransactionClearedStatusSchema,
+  ScheduledTransactionSchema,
+  ScheduledTransactionFrequencySchema,
 } from "./types.js";

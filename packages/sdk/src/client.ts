@@ -11,6 +11,7 @@ import type {
   Payee,
   Transaction,
   SaveTransactionParams,
+  ScheduledTransaction,
 } from "./types.js";
 import {
   YnabConfigSchema,
@@ -263,5 +264,31 @@ export class YnabClient {
       `/plans/${budgetId}/transactions/${transactionId}`
     );
     return data.transaction;
+  }
+
+  // -------------------------------------------------------------------------
+  // Scheduled Transactions  (GET /plans/{id}/scheduled_transactions[/{id}])
+  // -------------------------------------------------------------------------
+
+  async listScheduledTransactions(
+    budgetId: string,
+    lastKnowledgeOfServer?: number
+  ): Promise<{ scheduled_transactions: ScheduledTransaction[]; server_knowledge: number }> {
+    const query =
+      lastKnowledgeOfServer !== undefined
+        ? `?last_knowledge_of_server=${lastKnowledgeOfServer}`
+        : "";
+    return this.request("GET", `/plans/${budgetId}/scheduled_transactions${query}`);
+  }
+
+  async getScheduledTransaction(
+    budgetId: string,
+    scheduledTransactionId: string
+  ): Promise<ScheduledTransaction> {
+    const data = await this.request<{ scheduled_transaction: ScheduledTransaction }>(
+      "GET",
+      `/plans/${budgetId}/scheduled_transactions/${scheduledTransactionId}`
+    );
+    return data.scheduled_transaction;
   }
 }

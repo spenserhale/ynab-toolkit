@@ -210,3 +210,40 @@ export const SaveTransactionParamsSchema = z.object({
 });
 
 export type SaveTransactionParams = z.infer<typeof SaveTransactionParamsSchema>;
+
+// ---------------------------------------------------------------------------
+// Scheduled Transaction schemas
+// ---------------------------------------------------------------------------
+
+export const ScheduledTransactionFrequencySchema = z.enum([
+  "never",
+  "daily",
+  "weekly",
+  "everyOtherWeek",
+  "twiceAMonth",
+  "every4Weeks",
+  "monthly",
+  "everyOtherMonth",
+  "every3Months",
+  "every4Months",
+  "twiceAYear",
+  "yearly",
+  "everyOtherYear",
+]);
+
+export type ScheduledTransactionFrequency = z.infer<typeof ScheduledTransactionFrequencySchema>;
+
+export const ScheduledTransactionSchema = z.object({
+  id: z.string(),
+  date_first: z.string(),
+  date_next: z.string(),
+  frequency: ScheduledTransactionFrequencySchema,
+  amount: z.number().int(),
+  memo: z.string().optional().nullable(),
+  account_id: z.string(),
+  payee_id: z.string().optional().nullable(),
+  category_id: z.string().optional().nullable(),
+  deleted: z.boolean(),
+});
+
+export type ScheduledTransaction = z.infer<typeof ScheduledTransactionSchema>;
