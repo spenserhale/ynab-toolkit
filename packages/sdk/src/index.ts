@@ -9,6 +9,7 @@ export type {
   PaginatedResponse,
   ErrorResponse,
   BudgetSummary,
+  Account,
 } from "./types.js";
 export {
   YnabConfigSchema,
@@ -17,4 +18,6 @@ export {
   CreateResourceParamsSchema,
   ErrorResponseSchema,
   BudgetSummarySchema,
+  AccountSchema,
+  AccountTypeSchema,
 } from "./types.js";

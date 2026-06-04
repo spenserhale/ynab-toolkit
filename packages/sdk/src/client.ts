@@ -5,6 +5,7 @@ import type {
   CreateResourceParams,
   PaginatedResponse,
   BudgetSummary,
+  Account,
 } from "./types.js";
 import {
   YnabConfigSchema,
@@ -107,5 +108,28 @@ export class YnabClient {
       server_knowledge: number;
     }>("GET", `/plans/${budgetId}`);
     return data.budget;
+  }
+
+  // -------------------------------------------------------------------------
+  // Accounts  (GET /plans/{id}/accounts, GET /plans/{id}/accounts/{id})
+  // -------------------------------------------------------------------------
+
+  async listAccounts(
+    budgetId: string,
+    lastKnowledgeOfServer?: number
+  ): Promise<{ accounts: Account[]; server_knowledge: number }> {
+    const query =
+      lastKnowledgeOfServer !== undefined
+        ? `?last_knowledge_of_server=${lastKnowledgeOfServer}`
+        : "";
+    return this.request("GET", `/plans/${budgetId}/accounts${query}`);
+  }
+
+  async getAccount(budgetId: string, accountId: string): Promise<Account> {
+    const data = await this.request<{ account: Account }>(
+      "GET",
+      `/plans/${budgetId}/accounts/${accountId}`
+    );
+    return data.account;
   }
 }

@@ -79,3 +79,37 @@ export const BudgetSummarySchema = z.object({
 });
 
 export type BudgetSummary = z.infer<typeof BudgetSummarySchema>;
+
+// ---------------------------------------------------------------------------
+// Account schemas
+// ---------------------------------------------------------------------------
+
+export const AccountTypeSchema = z.enum([
+  "checking",
+  "savings",
+  "cash",
+  "creditCard",
+  "lineOfCredit",
+  "otherAsset",
+  "otherLiability",
+  "payPal",
+  "merchantAccount",
+  "investmentAccount",
+  "mortgage",
+]);
+
+export const AccountSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  type: AccountTypeSchema,
+  on_budget: z.boolean(),
+  closed: z.boolean(),
+  note: z.string().optional().nullable(),
+  balance: z.number().int(),
+  cleared_balance: z.number().int(),
+  uncleared_balance: z.number().int(),
+  transfer_payee_id: z.string(),
+  deleted: z.boolean(),
+});
+
+export type Account = z.infer<typeof AccountSchema>;
