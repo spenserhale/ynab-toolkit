@@ -247,3 +247,26 @@ export const ScheduledTransactionSchema = z.object({
 });
 
 export type ScheduledTransaction = z.infer<typeof ScheduledTransactionSchema>;
+
+// ---------------------------------------------------------------------------
+// Month schemas
+// ---------------------------------------------------------------------------
+
+export const MonthSummarySchema = z.object({
+  month: z.string(),
+  note: z.string().optional().nullable(),
+  income: z.number().int(),
+  budgeted: z.number().int(),
+  activity: z.number().int(),
+  to_be_budgeted: z.number().int(),
+  age_of_money: z.number().optional().nullable(),
+  deleted: z.boolean(),
+});
+
+export type MonthSummary = z.infer<typeof MonthSummarySchema>;
+
+export const MonthDetailSchema = MonthSummarySchema.extend({
+  categories: z.array(z.unknown()),
+});
+
+export type MonthDetail = z.infer<typeof MonthDetailSchema>;

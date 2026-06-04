@@ -19,6 +19,8 @@ export type {
   TransactionClearedStatus,
   ScheduledTransaction,
   ScheduledTransactionFrequency,
+  MonthSummary,
+  MonthDetail,
 } from "./types.js";
 export {
   YnabConfigSchema,
@@ -38,4 +40,6 @@ export {
   TransactionClearedStatusSchema,
   ScheduledTransactionSchema,
   ScheduledTransactionFrequencySchema,
+  MonthSummarySchema,
+  MonthDetailSchema,
 } from "./types.js";

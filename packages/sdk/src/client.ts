@@ -12,6 +12,8 @@ import type {
   Transaction,
   SaveTransactionParams,
   ScheduledTransaction,
+  MonthSummary,
+  MonthDetail,
 } from "./types.js";
 import {
   YnabConfigSchema,
@@ -290,5 +292,21 @@ export class YnabClient {
       `/plans/${budgetId}/scheduled_transactions/${scheduledTransactionId}`
     );
     return data.scheduled_transaction;
+  }
+
+  // -------------------------------------------------------------------------
+  // Months  (GET /plans/{id}/months, GET /plans/{id}/months/{month})
+  // -------------------------------------------------------------------------
+
+  async listMonths(budgetId: string): Promise<{ months: MonthSummary[] }> {
+    return this.request("GET", `/plans/${budgetId}/months`);
+  }
+
+  async getMonth(budgetId: string, month: string): Promise<MonthDetail> {
+    const data = await this.request<{ month: MonthDetail }>(
+      "GET",
+      `/plans/${budgetId}/months/${month}`
+    );
+    return data.month;
   }
 }
