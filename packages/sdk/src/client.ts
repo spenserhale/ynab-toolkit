@@ -6,6 +6,8 @@ import type {
   PaginatedResponse,
   BudgetSummary,
   Account,
+  Category,
+  CategoryGroup,
 } from "./types.js";
 import {
   YnabConfigSchema,
@@ -131,5 +133,43 @@ export class YnabClient {
       `/plans/${budgetId}/accounts/${accountId}`
     );
     return data.account;
+  }
+
+  // -------------------------------------------------------------------------
+  // Categories  (GET /plans/{id}/categories, GET /plans/{id}/categories/{id},
+  //              PATCH /plans/{id}/months/{month}/categories/{id})
+  // -------------------------------------------------------------------------
+
+  async listCategories(
+    budgetId: string,
+    lastKnowledgeOfServer?: number
+  ): Promise<{ category_groups: CategoryGroup[]; server_knowledge: number }> {
+    const query =
+      lastKnowledgeOfServer !== undefined
+        ? `?last_knowledge_of_server=${lastKnowledgeOfServer}`
+        : "";
+    return this.request("GET", `/plans/${budgetId}/categories${query}`);
+  }
+
+  async getCategory(budgetId: string, categoryId: string): Promise<Category> {
+    const data = await this.request<{ category: Category }>(
+      "GET",
+      `/plans/${budgetId}/categories/${categoryId}`
+    );
+    return data.category;
+  }
+
+  async updateMonthCategory(
+    budgetId: string,
+    month: string,
+    categoryId: string,
+    budgeted: number
+  ): Promise<Category> {
+    const data = await this.request<{ category: Category }>(
+      "PATCH",
+      `/plans/${budgetId}/months/${month}/categories/${categoryId}`,
+      { month_category: { budgeted } }
+    );
+    return data.category;
   }
 }

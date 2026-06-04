@@ -10,6 +10,8 @@ export type {
   ErrorResponse,
   BudgetSummary,
   Account,
+  Category,
+  CategoryGroup,
 } from "./types.js";
 export {
   YnabConfigSchema,
@@ -20,4 +22,6 @@ export {
   BudgetSummarySchema,
   AccountSchema,
   AccountTypeSchema,
+  CategorySchema,
+  CategoryGroupSchema,
 } from "./types.js";

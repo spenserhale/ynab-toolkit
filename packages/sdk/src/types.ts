@@ -113,3 +113,32 @@ export const AccountSchema = z.object({
 });
 
 export type Account = z.infer<typeof AccountSchema>;
+
+// ---------------------------------------------------------------------------
+// Category schemas
+// ---------------------------------------------------------------------------
+
+export const CategorySchema = z.object({
+  id: z.string(),
+  category_group_id: z.string(),
+  category_group_name: z.string().optional(),
+  name: z.string(),
+  hidden: z.boolean(),
+  note: z.string().optional().nullable(),
+  budgeted: z.number().int(),
+  activity: z.number().int(),
+  balance: z.number().int(),
+  deleted: z.boolean(),
+});
+
+export type Category = z.infer<typeof CategorySchema>;
+
+export const CategoryGroupSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  hidden: z.boolean(),
+  deleted: z.boolean(),
+  categories: z.array(CategorySchema),
+});
+
+export type CategoryGroup = z.infer<typeof CategoryGroupSchema>;
