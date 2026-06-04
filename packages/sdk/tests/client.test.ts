@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { YnabClient } from "../src/client.js";
-import { YnabAuthError, YnabRateLimitError, YnabError } from "../src/errors.js";
+import { YnabAuthError, YnabRateLimitError, YnabError, YnabNotFoundError } from "../src/errors.js";
 import { mockFetchError } from "./helpers/mock-fetch.js";
 
 describe("YnabClient", () => {
@@ -34,6 +34,13 @@ describe("YnabClient request() error handling", () => {
     ).rejects.toBeInstanceOf(YnabRateLimitError);
   });
 
+  it("throws YnabNotFoundError on 404", async () => {
+    mockFetchError(404, "404.2", "Not found");
+    await expect(
+      (client as unknown as { request: Function }).request("GET", "/test")
+    ).rejects.toBeInstanceOf(YnabNotFoundError);
+  });
+
   it("throws YnabError with detail on generic 4xx", async () => {
     mockFetchError(400, "400.1", "Bad request detail");
     const err = await (client as unknown as { request: Function })
@@ -41,5 +48,7 @@ describe("YnabClient request() error handling", () => {
       .catch((e: unknown) => e);
     expect(err).toBeInstanceOf(YnabError);
     expect((err as YnabError).message).toBe("Bad request detail");
+    expect((err as YnabError).code).toBe("400.1");
+    expect((err as YnabError).statusCode).toBe(400);
   });
 });

@@ -6,7 +6,7 @@ import { z } from "zod";
 
 export const YnabConfigSchema = z.object({
   apiKey: z.string().min(1, "API key is required"),
-  baseUrl: z.string().url().default("https://api.ynab.com"),
+  baseUrl: z.string().url().default("https://api.ynab.com/v1"),
 });
 
 export type YnabConfig = z.infer<typeof YnabConfigSchema>;

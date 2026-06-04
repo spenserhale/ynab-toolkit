@@ -11,7 +11,11 @@ describe("resolveConfig", () => {
     } else {
       process.env["YNAB_API_KEY"] = savedKey;
     }
-    delete process.env["YNAB_BASE_URL"];
+    if (savedUrl === undefined) {
+      delete process.env["YNAB_BASE_URL"];
+    } else {
+      process.env["YNAB_BASE_URL"] = savedUrl;
+    }
   });
 
   it("reads YNAB_API_KEY from env", () => {
