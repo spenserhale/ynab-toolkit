@@ -58,8 +58,9 @@ export type PaginatedResponse<T> = {
 
 export const ErrorResponseSchema = z.object({
   error: z.object({
-    code: z.string(),
-    message: z.string(),
+    id: z.string(),
+    name: z.string(),
+    detail: z.string(),
   }),
 });
 
