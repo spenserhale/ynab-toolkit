@@ -1,4 +1,7 @@
 import type { FastMCP } from "fastmcp";
 
-// Placeholder — MCP tools not yet implemented. Wire real tools here.
-export function registerResourceTools(_server: FastMCP): void {}
+export function registerResourceTools(_server: FastMCP): never {
+  throw new Error(
+    "registerResourceTools not implemented: wire real YNAB MCP tools before starting the server"
+  );
+}

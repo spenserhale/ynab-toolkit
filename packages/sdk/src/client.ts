@@ -7,6 +7,7 @@ import type {
   Payee,
   Transaction,
   SaveTransactionParams,
+  BulkCreateTransactionsResponse,
   ScheduledTransaction,
   MonthSummary,
   MonthDetail,
@@ -20,6 +21,7 @@ import {
   CategoryGroupSchema,
   PayeeSchema,
   TransactionSchema,
+  BulkCreateTransactionsResponseSchema,
   ScheduledTransactionSchema,
   MonthSummarySchema,
   MonthDetailSchema,
@@ -251,10 +253,13 @@ export class YnabClient {
   async createTransactions(
     budgetId: string,
     transactions: SaveTransactionParams[]
-  ): Promise<{ transaction_ids: string[]; duplicate_import_ids?: string[]; server_knowledge?: number }> {
-    return this.request("POST", `/plans/${budgetId}/transactions`, {
-      transactions,
-    });
+  ): Promise<BulkCreateTransactionsResponse> {
+    const data = await this.request<unknown>(
+      "POST",
+      `/plans/${budgetId}/transactions`,
+      { transactions }
+    );
+    return BulkCreateTransactionsResponseSchema.parse(data);
   }
 
   async updateTransaction(

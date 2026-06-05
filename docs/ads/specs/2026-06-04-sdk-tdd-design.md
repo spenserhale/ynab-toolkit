@@ -31,7 +31,7 @@ Typed YNAB response fixtures organized by entity namespace:
 
 ## Test file layout
 
-```
+```text
 packages/sdk/tests/
   helpers/
     mock-fetch.ts

@@ -168,6 +168,14 @@ export const SaveTransactionParamsSchema = z.object({
 
 export type SaveTransactionParams = z.infer<typeof SaveTransactionParamsSchema>;
 
+export const BulkCreateTransactionsResponseSchema = z.object({
+  transaction_ids: z.array(z.string()),
+  duplicate_import_ids: z.array(z.string()).optional(),
+  server_knowledge: z.number().optional(),
+});
+
+export type BulkCreateTransactionsResponse = z.infer<typeof BulkCreateTransactionsResponseSchema>;
+
 // ---------------------------------------------------------------------------
 // Scheduled Transaction schemas
 // ---------------------------------------------------------------------------
@@ -223,7 +231,7 @@ export const MonthSummarySchema = z.object({
 export type MonthSummary = z.infer<typeof MonthSummarySchema>;
 
 export const MonthDetailSchema = MonthSummarySchema.extend({
-  categories: z.array(z.unknown()),
+  categories: z.array(CategorySchema),
 });
 
 export type MonthDetail = z.infer<typeof MonthDetailSchema>;
