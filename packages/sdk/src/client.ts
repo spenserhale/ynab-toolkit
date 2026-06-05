@@ -11,7 +11,19 @@ import type {
   MonthSummary,
   MonthDetail,
 } from "./types.js";
-import { YnabConfigSchema, ErrorResponseSchema } from "./types.js";
+import {
+  YnabConfigSchema,
+  ErrorResponseSchema,
+  BudgetSummarySchema,
+  AccountSchema,
+  CategorySchema,
+  CategoryGroupSchema,
+  PayeeSchema,
+  TransactionSchema,
+  ScheduledTransactionSchema,
+  MonthSummarySchema,
+  MonthDetailSchema,
+} from "./types.js";
 import {
   YnabError,
   YnabAuthError,
@@ -72,15 +84,20 @@ export class YnabClient {
       lastKnowledgeOfServer !== undefined
         ? `?last_knowledge_of_server=${lastKnowledgeOfServer}`
         : "";
-    return this.request("GET", `/plans${query}`);
+    const data = await this.request<{ budgets: unknown[]; server_knowledge: number }>(
+      "GET", `/plans${query}`
+    );
+    return {
+      budgets: BudgetSummarySchema.array().parse(data.budgets),
+      server_knowledge: data.server_knowledge,
+    };
   }
 
   async getBudget(budgetId: string): Promise<BudgetSummary> {
-    const data = await this.request<{
-      budget: BudgetSummary;
-      server_knowledge: number;
-    }>("GET", `/plans/${budgetId}`);
-    return data.budget;
+    const data = await this.request<{ budget: unknown; server_knowledge: number }>(
+      "GET", `/plans/${budgetId}`
+    );
+    return BudgetSummarySchema.parse(data.budget);
   }
 
   // -------------------------------------------------------------------------
@@ -95,15 +112,21 @@ export class YnabClient {
       lastKnowledgeOfServer !== undefined
         ? `?last_knowledge_of_server=${lastKnowledgeOfServer}`
         : "";
-    return this.request("GET", `/plans/${budgetId}/accounts${query}`);
+    const data = await this.request<{ accounts: unknown[]; server_knowledge: number }>(
+      "GET", `/plans/${budgetId}/accounts${query}`
+    );
+    return {
+      accounts: AccountSchema.array().parse(data.accounts),
+      server_knowledge: data.server_knowledge,
+    };
   }
 
   async getAccount(budgetId: string, accountId: string): Promise<Account> {
-    const data = await this.request<{ account: Account }>(
+    const data = await this.request<{ account: unknown }>(
       "GET",
       `/plans/${budgetId}/accounts/${accountId}`
     );
-    return data.account;
+    return AccountSchema.parse(data.account);
   }
 
   // -------------------------------------------------------------------------
@@ -119,15 +142,21 @@ export class YnabClient {
       lastKnowledgeOfServer !== undefined
         ? `?last_knowledge_of_server=${lastKnowledgeOfServer}`
         : "";
-    return this.request("GET", `/plans/${budgetId}/categories${query}`);
+    const data = await this.request<{ category_groups: unknown[]; server_knowledge: number }>(
+      "GET", `/plans/${budgetId}/categories${query}`
+    );
+    return {
+      category_groups: CategoryGroupSchema.array().parse(data.category_groups),
+      server_knowledge: data.server_knowledge,
+    };
   }
 
   async getCategory(budgetId: string, categoryId: string): Promise<Category> {
-    const data = await this.request<{ category: Category }>(
+    const data = await this.request<{ category: unknown }>(
       "GET",
       `/plans/${budgetId}/categories/${categoryId}`
     );
-    return data.category;
+    return CategorySchema.parse(data.category);
   }
 
   async updateMonthCategory(
@@ -136,12 +165,12 @@ export class YnabClient {
     categoryId: string,
     budgeted: number
   ): Promise<Category> {
-    const data = await this.request<{ category: Category }>(
+    const data = await this.request<{ category: unknown }>(
       "PATCH",
       `/plans/${budgetId}/months/${month}/categories/${categoryId}`,
       { month_category: { budgeted } }
     );
-    return data.category;
+    return CategorySchema.parse(data.category);
   }
 
   // -------------------------------------------------------------------------
@@ -156,15 +185,21 @@ export class YnabClient {
       lastKnowledgeOfServer !== undefined
         ? `?last_knowledge_of_server=${lastKnowledgeOfServer}`
         : "";
-    return this.request("GET", `/plans/${budgetId}/payees${query}`);
+    const data = await this.request<{ payees: unknown[]; server_knowledge: number }>(
+      "GET", `/plans/${budgetId}/payees${query}`
+    );
+    return {
+      payees: PayeeSchema.array().parse(data.payees),
+      server_knowledge: data.server_knowledge,
+    };
   }
 
   async getPayee(budgetId: string, payeeId: string): Promise<Payee> {
-    const data = await this.request<{ payee: Payee }>(
+    const data = await this.request<{ payee: unknown }>(
       "GET",
       `/plans/${budgetId}/payees/${payeeId}`
     );
-    return data.payee;
+    return PayeeSchema.parse(data.payee);
   }
 
   // -------------------------------------------------------------------------
@@ -183,30 +218,40 @@ export class YnabClient {
       query.set("since_date", params.sinceDate);
     }
     const qs = query.toString() ? `?${query.toString()}` : "";
-    return this.request("GET", `/plans/${budgetId}/transactions${qs}`);
+    const data = await this.request<{ transactions: unknown[]; server_knowledge: number }>(
+      "GET", `/plans/${budgetId}/transactions${qs}`
+    );
+    return {
+      transactions: TransactionSchema.array().parse(data.transactions),
+      server_knowledge: data.server_knowledge,
+    };
   }
 
   async getTransaction(budgetId: string, transactionId: string): Promise<Transaction> {
-    const data = await this.request<{ transaction: Transaction }>(
+    const data = await this.request<{ transaction: unknown }>(
       "GET",
       `/plans/${budgetId}/transactions/${transactionId}`
     );
-    return data.transaction;
+    return TransactionSchema.parse(data.transaction);
   }
 
   async createTransaction(
     budgetId: string,
     transaction: SaveTransactionParams
-  ): Promise<{ transaction: Transaction; duplicate_import_ids: string[] }> {
-    return this.request("POST", `/plans/${budgetId}/transactions`, {
-      transaction,
-    });
+  ): Promise<{ transaction: Transaction; duplicate_import_ids?: string[] }> {
+    const data = await this.request<{ transaction: unknown; duplicate_import_ids?: string[] }>(
+      "POST", `/plans/${budgetId}/transactions`, { transaction }
+    );
+    return {
+      transaction: TransactionSchema.parse(data.transaction),
+      duplicate_import_ids: data.duplicate_import_ids,
+    };
   }
 
   async createTransactions(
     budgetId: string,
     transactions: SaveTransactionParams[]
-  ): Promise<{ transaction_ids: string[]; duplicate_import_ids: string[] }> {
+  ): Promise<{ transaction_ids: string[]; duplicate_import_ids?: string[]; server_knowledge?: number }> {
     return this.request("POST", `/plans/${budgetId}/transactions`, {
       transactions,
     });
@@ -217,20 +262,20 @@ export class YnabClient {
     transactionId: string,
     transaction: SaveTransactionParams
   ): Promise<Transaction> {
-    const data = await this.request<{ transaction: Transaction }>(
+    const data = await this.request<{ transaction: unknown }>(
       "PUT",
       `/plans/${budgetId}/transactions/${transactionId}`,
       { transaction }
     );
-    return data.transaction;
+    return TransactionSchema.parse(data.transaction);
   }
 
   async deleteTransaction(budgetId: string, transactionId: string): Promise<Transaction> {
-    const data = await this.request<{ transaction: Transaction }>(
+    const data = await this.request<{ transaction: unknown }>(
       "DELETE",
       `/plans/${budgetId}/transactions/${transactionId}`
     );
-    return data.transaction;
+    return TransactionSchema.parse(data.transaction);
   }
 
   // -------------------------------------------------------------------------
@@ -245,18 +290,24 @@ export class YnabClient {
       lastKnowledgeOfServer !== undefined
         ? `?last_knowledge_of_server=${lastKnowledgeOfServer}`
         : "";
-    return this.request("GET", `/plans/${budgetId}/scheduled_transactions${query}`);
+    const data = await this.request<{ scheduled_transactions: unknown[]; server_knowledge: number }>(
+      "GET", `/plans/${budgetId}/scheduled_transactions${query}`
+    );
+    return {
+      scheduled_transactions: ScheduledTransactionSchema.array().parse(data.scheduled_transactions),
+      server_knowledge: data.server_knowledge,
+    };
   }
 
   async getScheduledTransaction(
     budgetId: string,
     scheduledTransactionId: string
   ): Promise<ScheduledTransaction> {
-    const data = await this.request<{ scheduled_transaction: ScheduledTransaction }>(
+    const data = await this.request<{ scheduled_transaction: unknown }>(
       "GET",
       `/plans/${budgetId}/scheduled_transactions/${scheduledTransactionId}`
     );
-    return data.scheduled_transaction;
+    return ScheduledTransactionSchema.parse(data.scheduled_transaction);
   }
 
   // -------------------------------------------------------------------------
@@ -264,14 +315,17 @@ export class YnabClient {
   // -------------------------------------------------------------------------
 
   async listMonths(budgetId: string): Promise<{ months: MonthSummary[] }> {
-    return this.request("GET", `/plans/${budgetId}/months`);
+    const data = await this.request<{ months: unknown[] }>(
+      "GET", `/plans/${budgetId}/months`
+    );
+    return { months: MonthSummarySchema.array().parse(data.months) };
   }
 
   async getMonth(budgetId: string, month: string): Promise<MonthDetail> {
-    const data = await this.request<{ month: MonthDetail }>(
+    const data = await this.request<{ month: unknown }>(
       "GET",
       `/plans/${budgetId}/months/${month}`
     );
-    return data.month;
+    return MonthDetailSchema.parse(data.month);
   }
 }

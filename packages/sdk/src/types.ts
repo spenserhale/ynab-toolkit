@@ -47,10 +47,12 @@ export const AccountTypeSchema = z.enum([
   "lineOfCredit",
   "otherAsset",
   "otherLiability",
-  "payPal",
-  "merchantAccount",
-  "investmentAccount",
   "mortgage",
+  "autoLoan",
+  "studentLoan",
+  "personalLoan",
+  "medicalDebt",
+  "otherDebt",
 ]);
 
 export const AccountSchema = z.object({
