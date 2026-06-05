@@ -31,9 +31,9 @@ describe.skipIf(!apiKey)("smoke", () => {
       // 5. List categories
       const { category_groups } = await client.listCategories(budgetId);
       expect(category_groups.length).toBeGreaterThan(0);
-      const firstCategory = category_groups[0]!.categories[0];
-      expect(firstCategory).toBeDefined();
-      const categoryId = firstCategory!.id;
+      const groupWithCategories = category_groups.find((g) => g.categories.length > 0);
+      expect(groupWithCategories).toBeDefined();
+      const categoryId = groupWithCategories!.categories[0]!.id;
 
       // 6. Get category
       const category = await client.getCategory(budgetId, categoryId);
@@ -63,6 +63,18 @@ describe.skipIf(!apiKey)("smoke", () => {
       // 11. List scheduled transactions
       const { scheduled_transactions } = await client.listScheduledTransactions(budgetId);
       expect(Array.isArray(scheduled_transactions)).toBe(true);
+      if (scheduled_transactions.length > 0) {
+        const scheduledTransactionId = scheduled_transactions[0]!.id;
+
+        // 11a. Get scheduled transaction
+        const scheduledTransaction = await client.getScheduledTransaction(
+          budgetId,
+          scheduledTransactionId
+        );
+        expect(scheduledTransaction.id).toBe(scheduledTransactionId);
+      } else {
+        console.warn("[smoke] No scheduled transactions found — skipping getScheduledTransaction");
+      }
 
       // 12. List months
       const { months } = await client.listMonths(budgetId);
