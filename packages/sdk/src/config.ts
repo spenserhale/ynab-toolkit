@@ -1,17 +1,13 @@
 import type { YnabConfig } from "./types.js";
 
-/**
- * Resolve configuration from environment variables.
- * Useful for both CLI and MCP contexts.
- */
-export function resolveConfig(
-  overrides: Partial<YnabConfig> = {}
-): YnabConfig {
+export function resolveConfig(overrides: Partial<YnabConfig> = {}): YnabConfig {
+  const apiKey = overrides.apiKey ?? process.env["YNAB_API_KEY"] ?? "";
+  if (!apiKey) throw new Error("YNAB_API_KEY is required");
   return {
-    apiKey: overrides.apiKey ?? process.env.YNAB_API_KEY ?? "",
+    apiKey,
     baseUrl:
       overrides.baseUrl ??
-      process.env.YNAB_BASE_URL ??
-      "https://api.ynab.com",
+      process.env["YNAB_BASE_URL"] ??
+      "https://api.ynab.com/v1",
   };
 }

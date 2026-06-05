@@ -1,0 +1,3 @@
+[test]
+# refs/ contains read-only third-party repos whose deps are not installed
+pathIgnorePatterns = ["refs/**"]

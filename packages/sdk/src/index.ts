@@ -1,18 +1,40 @@
 export { YnabClient } from "./client.js";
 export { resolveConfig } from "./config.js";
-export { YnabError, YnabAuthError, YnabNotFoundError } from "./errors.js";
+export { YnabError, YnabAuthError, YnabNotFoundError, YnabRateLimitError } from "./errors.js";
 export type {
   YnabConfig,
-  Resource,
-  ListResourcesParams,
-  CreateResourceParams,
-  PaginatedResponse,
   ErrorResponse,
+  BudgetSummary,
+  Account,
+  Category,
+  CategoryGroup,
+  Payee,
+  Transaction,
+  SubTransaction,
+  SaveTransactionParams,
+  BulkCreateTransactionsResponse,
+  TransactionClearedStatus,
+  ScheduledTransaction,
+  ScheduledTransactionFrequency,
+  MonthSummary,
+  MonthDetail,
 } from "./types.js";
 export {
   YnabConfigSchema,
-  ResourceSchema,
-  ListResourcesParamsSchema,
-  CreateResourceParamsSchema,
   ErrorResponseSchema,
+  BudgetSummarySchema,
+  AccountSchema,
+  AccountTypeSchema,
+  CategorySchema,
+  CategoryGroupSchema,
+  PayeeSchema,
+  TransactionSchema,
+  SubTransactionSchema,
+  SaveTransactionParamsSchema,
+  BulkCreateTransactionsResponseSchema,
+  TransactionClearedStatusSchema,
+  ScheduledTransactionSchema,
+  ScheduledTransactionFrequencySchema,
+  MonthSummarySchema,
+  MonthDetailSchema,
 } from "./types.js";

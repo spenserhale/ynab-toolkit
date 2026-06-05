@@ -17,8 +17,15 @@ export class YnabAuthError extends YnabError {
 }
 
 export class YnabNotFoundError extends YnabError {
-  constructor(resource: string, id: string) {
+  constructor(resource = "resource", id = "unknown") {
     super(`${resource} with id "${id}" not found`, "NOT_FOUND", 404);
     this.name = "YnabNotFoundError";
+  }
+}
+
+export class YnabRateLimitError extends YnabError {
+  constructor(message = "Rate limit exceeded. Wait before retrying (200 req/hour).") {
+    super(message, "RATE_LIMIT_EXCEEDED", 429);
+    this.name = "YnabRateLimitError";
   }
 }

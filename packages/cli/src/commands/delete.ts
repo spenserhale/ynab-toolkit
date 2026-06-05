@@ -1,31 +1,10 @@
 import { buildCommand } from "@stricli/core";
-import { YnabClient, resolveConfig } from "@ynab-toolkit/sdk";
 
 export const deleteCommand = buildCommand({
-  docs: {
-    brief: "Delete a resource by ID",
-  },
-  parameters: {
-    positional: {
-      kind: "tuple",
-      parameters: [
-        {
-          brief: "Resource ID",
-          parse: String,
-        },
-      ],
-    },
-  },
-  async func(this: void, _flags: {}, id: string) {
-    const config = resolveConfig();
-    const client = new YnabClient(config);
-
-    try {
-      await client.deleteResource(id);
-      console.log(`Deleted resource: ${id}`);
-    } catch (err) {
-      console.error(`Error: ${err instanceof Error ? err.message : err}`);
-      process.exit(1);
-    }
+  docs: { brief: "Delete resource (not yet implemented)" },
+  parameters: { flags: {} },
+  async func(this: void) {
+    console.error("CLI commands not yet implemented. Use the SDK directly.");
+    process.exit(1);
   },
 });
