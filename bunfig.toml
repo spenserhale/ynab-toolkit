@@ -1,3 +1,4 @@
 [test]
 # refs/ contains read-only third-party repos whose deps are not installed
-pathIgnorePatterns = ["refs/**"]
+# smoke.test.ts is excluded because it requires YNAB_API_KEY
+pathIgnorePatterns = ["refs/**", "**/smoke.test.ts"]
