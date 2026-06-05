@@ -33,6 +33,11 @@ export function handleError(err: unknown): never {
     console.error(`API error: ${err.message}`);
     process.exit(1);
   }
+  // Zod validation errors (malformed API response or invalid input)
+  if (err instanceof Error && err.name === "ZodError") {
+    console.error(`Validation error: ${err.message}`);
+    process.exit(2);
+  }
   console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
   process.exit(1);
 }
