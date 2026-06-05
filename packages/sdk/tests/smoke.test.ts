@@ -1,21 +1,13 @@
-import { describe, it, expect, beforeAll } from "bun:test";
+import { describe, it, expect } from "bun:test";
 import { YnabClient } from "../src/client.js";
 
-describe("smoke", () => {
-  beforeAll(() => {
-    if (!process.env.YNAB_API_KEY) {
-      throw new Error(
-        "YNAB_API_KEY is required to run the smoke test.\n" +
-          "Set it in your .env file or environment before running:\n" +
-          "  bun test tests/smoke.test.ts"
-      );
-    }
-  });
+const apiKey = process.env.YNAB_API_KEY;
 
+describe.skipIf(!apiKey)("smoke", () => {
   it(
     "calls every API endpoint once",
     async () => {
-      const client = new YnabClient({ apiKey: process.env.YNAB_API_KEY! });
+      const client = new YnabClient({ apiKey: apiKey! });
 
       // 1. List budgets
       const { budgets } = await client.listBudgets();
