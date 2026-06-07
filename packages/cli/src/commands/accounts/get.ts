@@ -24,9 +24,12 @@ export const getAccountCommand = buildCommand({
   },
   async func(this: void, flags: GetAccountFlags, accountId: string) {
     const config = resolveConfigOrExit();
+    const budgetId = flags["budget-id"] !== "last-used"
+      ? flags["budget-id"]
+      : (config.budgetId ?? "last-used");
     try {
       const client = new YnabClient(config);
-      const result = await client.getAccount(flags["budget-id"], accountId);
+      const result = await client.getAccount(budgetId, accountId);
       console.log(JSON.stringify(result, null, 2));
     } catch (err) {
       handleError(err);

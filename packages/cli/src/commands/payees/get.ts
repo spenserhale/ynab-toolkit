@@ -24,9 +24,12 @@ export const getPayeeCommand = buildCommand({
   },
   async func(this: void, flags: GetPayeeFlags, payeeId: string) {
     const config = resolveConfigOrExit();
+    const budgetId = flags["budget-id"] !== "last-used"
+      ? flags["budget-id"]
+      : (config.budgetId ?? "last-used");
     try {
       const client = new YnabClient(config);
-      const result = await client.getPayee(flags["budget-id"], payeeId);
+      const result = await client.getPayee(budgetId, payeeId);
       console.log(JSON.stringify(result, null, 2));
     } catch (err) {
       handleError(err);

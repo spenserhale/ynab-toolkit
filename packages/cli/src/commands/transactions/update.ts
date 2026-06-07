@@ -47,9 +47,12 @@ export const updateTransactionCommand = buildCommand({
       process.exit(0);
     }
     const config = resolveConfigOrExit();
+    const budgetId = flags["budget-id"] !== "last-used"
+      ? flags["budget-id"]
+      : (config.budgetId ?? "last-used");
     try {
       const client = new YnabClient(config);
-      const result = await client.updateTransaction(flags["budget-id"], transactionId, params);
+      const result = await client.updateTransaction(budgetId, transactionId, params);
       console.log(JSON.stringify(result, null, 2));
     } catch (err) {
       handleError(err);

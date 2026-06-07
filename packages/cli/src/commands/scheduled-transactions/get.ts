@@ -28,10 +28,13 @@ export const getScheduledTransactionCommand = buildCommand({
     scheduledTransactionId: string
   ) {
     const config = resolveConfigOrExit();
+    const budgetId = flags["budget-id"] !== "last-used"
+      ? flags["budget-id"]
+      : (config.budgetId ?? "last-used");
     try {
       const client = new YnabClient(config);
       const result = await client.getScheduledTransaction(
-        flags["budget-id"],
+        budgetId,
         scheduledTransactionId
       );
       console.log(JSON.stringify(result, null, 2));

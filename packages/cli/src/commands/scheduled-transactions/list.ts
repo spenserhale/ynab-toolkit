@@ -20,9 +20,12 @@ export const listScheduledTransactionsCommand = buildCommand({
   },
   async func(this: void, flags: ListScheduledTransactionsFlags) {
     const config = resolveConfigOrExit();
+    const budgetId = flags["budget-id"] !== "last-used"
+      ? flags["budget-id"]
+      : (config.budgetId ?? "last-used");
     try {
       const client = new YnabClient(config);
-      const result = await client.listScheduledTransactions(flags["budget-id"]);
+      const result = await client.listScheduledTransactions(budgetId);
       console.log(JSON.stringify(result, null, 2));
     } catch (err) {
       handleError(err);

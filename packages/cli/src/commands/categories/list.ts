@@ -20,9 +20,12 @@ export const listCategoriesCommand = buildCommand({
   },
   async func(this: void, flags: ListCategoriesFlags) {
     const config = resolveConfigOrExit();
+    const budgetId = flags["budget-id"] !== "last-used"
+      ? flags["budget-id"]
+      : (config.budgetId ?? "last-used");
     try {
       const client = new YnabClient(config);
-      const result = await client.listCategories(flags["budget-id"]);
+      const result = await client.listCategories(budgetId);
       console.log(JSON.stringify(result, null, 2));
     } catch (err) {
       handleError(err);

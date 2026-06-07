@@ -34,9 +34,12 @@ export const listTransactionsCommand = buildCommand({
   },
   async func(this: void, flags: ListTransactionsFlags) {
     const config = resolveConfigOrExit();
+    const budgetId = flags["budget-id"] !== "last-used"
+      ? flags["budget-id"]
+      : (config.budgetId ?? "last-used");
     try {
       const client = new YnabClient(config);
-      const result = await client.listTransactions(flags["budget-id"], {
+      const result = await client.listTransactions(budgetId, {
         sinceDate: flags["since-date"] || undefined,
         lastKnowledgeOfServer: flags.knowledge || undefined,
       });

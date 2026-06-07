@@ -44,9 +44,12 @@ export const deleteTransactionCommand = buildCommand({
       process.exit(2);
     }
     const config = resolveConfigOrExit();
+    const budgetId = flags["budget-id"] !== "last-used"
+      ? flags["budget-id"]
+      : (config.budgetId ?? "last-used");
     try {
       const client = new YnabClient(config);
-      const result = await client.deleteTransaction(flags["budget-id"], transactionId);
+      const result = await client.deleteTransaction(budgetId, transactionId);
       console.log(JSON.stringify(result, null, 2));
     } catch (err) {
       handleError(err);

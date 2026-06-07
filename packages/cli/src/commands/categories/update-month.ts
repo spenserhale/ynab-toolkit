@@ -34,10 +34,13 @@ export const updateMonthCategoryCommand = buildCommand({
     budgeted: number
   ) {
     const config = resolveConfigOrExit();
+    const budgetId = flags["budget-id"] !== "last-used"
+      ? flags["budget-id"]
+      : (config.budgetId ?? "last-used");
     try {
       const client = new YnabClient(config);
       const result = await client.updateMonthCategory(
-        flags["budget-id"],
+        budgetId,
         month,
         categoryId,
         budgeted

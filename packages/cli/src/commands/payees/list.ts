@@ -20,9 +20,12 @@ export const listPayeesCommand = buildCommand({
   },
   async func(this: void, flags: ListPayeesFlags) {
     const config = resolveConfigOrExit();
+    const budgetId = flags["budget-id"] !== "last-used"
+      ? flags["budget-id"]
+      : (config.budgetId ?? "last-used");
     try {
       const client = new YnabClient(config);
-      const result = await client.listPayees(flags["budget-id"]);
+      const result = await client.listPayees(budgetId);
       console.log(JSON.stringify(result, null, 2));
     } catch (err) {
       handleError(err);

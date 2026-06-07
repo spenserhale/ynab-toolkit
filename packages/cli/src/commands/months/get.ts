@@ -24,9 +24,12 @@ export const getMonthCommand = buildCommand({
   },
   async func(this: void, flags: GetMonthFlags, month: string) {
     const config = resolveConfigOrExit();
+    const budgetId = flags["budget-id"] !== "last-used"
+      ? flags["budget-id"]
+      : (config.budgetId ?? "last-used");
     try {
       const client = new YnabClient(config);
-      const result = await client.getMonth(flags["budget-id"], month);
+      const result = await client.getMonth(budgetId, month);
       console.log(JSON.stringify(result, null, 2));
     } catch (err) {
       handleError(err);
