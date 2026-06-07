@@ -1,8 +1,10 @@
 import { buildCommand } from "@stricli/core";
 import { YnabClient } from "@ynab-toolkit/sdk";
 import { resolveConfigOrExit, handleError } from "../../handle-error.js";
+import { outputFlags, formatOutput } from "../../output.js";
+import type { OutputFlags } from "../../output.js";
 
-interface UpdateTransactionFlags {
+interface UpdateTransactionFlags extends OutputFlags {
   readonly "budget-id": string;
   readonly "dry-run": boolean;
 }
@@ -22,6 +24,7 @@ export const updateTransactionCommand = buildCommand({
         brief: "Print what would be sent without updating",
         default: false,
       },
+      ...outputFlags,
     },
     positional: {
       kind: "tuple",
@@ -43,7 +46,7 @@ export const updateTransactionCommand = buildCommand({
   ) {
     const params = { account_id: accountId, date, amount };
     if (flags["dry-run"]) {
-      console.log(JSON.stringify({ dry_run: true, transaction_id: transactionId, transaction: params }, null, 2));
+      console.log(formatOutput({ dry_run: true, transaction_id: transactionId, transaction: params }, flags));
       process.exit(0);
     }
     const config = resolveConfigOrExit();
@@ -53,7 +56,7 @@ export const updateTransactionCommand = buildCommand({
     try {
       const client = new YnabClient(config);
       const result = await client.updateTransaction(budgetId, transactionId, params);
-      console.log(JSON.stringify(result, null, 2));
+      console.log(formatOutput(result, flags));
     } catch (err) {
       handleError(err);
     }

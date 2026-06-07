@@ -1,8 +1,10 @@
 import { buildCommand } from "@stricli/core";
 import { YnabClient } from "@ynab-toolkit/sdk";
 import { resolveConfigOrExit, handleError } from "../../handle-error.js";
+import { outputFlags, formatOutput } from "../../output.js";
+import type { OutputFlags } from "../../output.js";
 
-interface DeleteTransactionFlags {
+interface DeleteTransactionFlags extends OutputFlags {
   readonly "budget-id": string;
   readonly "dry-run": boolean;
   readonly yes: boolean;
@@ -28,6 +30,7 @@ export const deleteTransactionCommand = buildCommand({
         brief: "Confirm deletion (required for non-dry-run)",
         default: false,
       },
+      ...outputFlags,
     },
     positional: {
       kind: "tuple",
@@ -36,7 +39,7 @@ export const deleteTransactionCommand = buildCommand({
   },
   async func(this: void, flags: DeleteTransactionFlags, transactionId: string) {
     if (flags["dry-run"]) {
-      console.log(JSON.stringify({ dry_run: true, transaction_id: transactionId }, null, 2));
+      console.log(formatOutput({ dry_run: true, transaction_id: transactionId }, flags));
       process.exit(0);
     }
     if (!flags.yes) {
@@ -50,7 +53,7 @@ export const deleteTransactionCommand = buildCommand({
     try {
       const client = new YnabClient(config);
       const result = await client.deleteTransaction(budgetId, transactionId);
-      console.log(JSON.stringify(result, null, 2));
+      console.log(formatOutput(result, flags));
     } catch (err) {
       handleError(err);
     }

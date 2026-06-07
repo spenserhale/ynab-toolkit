@@ -1,8 +1,10 @@
 import { buildCommand } from "@stricli/core";
 import { YnabClient } from "@ynab-toolkit/sdk";
 import { resolveConfigOrExit, handleError } from "../../handle-error.js";
+import { outputFlags, formatOutput } from "../../output.js";
+import type { OutputFlags } from "../../output.js";
 
-interface CreateTransactionFlags {
+interface CreateTransactionFlags extends OutputFlags {
   readonly "budget-id": string;
   readonly "dry-run": boolean;
   readonly "idempotency-key": string;
@@ -29,6 +31,7 @@ export const createTransactionCommand = buildCommand({
         brief: "Idempotency key (maps to import_id for deduplication)",
         default: "",
       },
+      ...outputFlags,
     },
     positional: {
       kind: "tuple",
@@ -53,7 +56,7 @@ export const createTransactionCommand = buildCommand({
       import_id: flags["idempotency-key"] || null,
     };
     if (flags["dry-run"]) {
-      console.log(JSON.stringify({ dry_run: true, transaction: params }, null, 2));
+      console.log(formatOutput({ dry_run: true, transaction: params }, flags));
       process.exit(0);
     }
     const config = resolveConfigOrExit();
@@ -63,7 +66,7 @@ export const createTransactionCommand = buildCommand({
     try {
       const client = new YnabClient(config);
       const result = await client.createTransaction(budgetId, params);
-      console.log(JSON.stringify(result, null, 2));
+      console.log(formatOutput(result, flags));
     } catch (err) {
       handleError(err);
     }

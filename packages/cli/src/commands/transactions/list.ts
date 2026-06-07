@@ -1,8 +1,10 @@
 import { buildCommand } from "@stricli/core";
 import { YnabClient } from "@ynab-toolkit/sdk";
 import { resolveConfigOrExit, handleError } from "../../handle-error.js";
+import { outputFlags, formatOutput } from "../../output.js";
+import type { OutputFlags } from "../../output.js";
 
-interface ListTransactionsFlags {
+interface ListTransactionsFlags extends OutputFlags {
   readonly "budget-id": string;
   readonly "since-date": string;
   readonly knowledge: number;
@@ -30,6 +32,7 @@ export const listTransactionsCommand = buildCommand({
         brief: "last_knowledge_of_server for delta requests (0 = full sync)",
         default: "0",
       },
+      ...outputFlags,
     },
   },
   async func(this: void, flags: ListTransactionsFlags) {
@@ -43,7 +46,7 @@ export const listTransactionsCommand = buildCommand({
         sinceDate: flags["since-date"] || undefined,
         lastKnowledgeOfServer: flags.knowledge || undefined,
       });
-      console.log(JSON.stringify(result, null, 2));
+      console.log(formatOutput(result, flags));
     } catch (err) {
       handleError(err);
     }
