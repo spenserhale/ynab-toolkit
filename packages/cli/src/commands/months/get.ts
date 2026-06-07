@@ -1,13 +1,15 @@
 import { buildCommand } from "@stricli/core";
 import { YnabClient } from "@ynab-toolkit/sdk";
 import { resolveConfigOrExit, handleError } from "../../handle-error.js";
+import { outputFlags, formatOutput } from "../../output.js";
+import type { OutputFlags } from "../../output.js";
 
-interface GetMonthFlags {
+interface GetMonthFlags extends OutputFlags {
   readonly "budget-id": string;
 }
 
 export const getMonthCommand = buildCommand({
-  docs: { brief: "Get a specific budget month" },
+  docs: { brief: "Get a budget month" },
   parameters: {
     flags: {
       "budget-id": {
@@ -16,6 +18,7 @@ export const getMonthCommand = buildCommand({
         brief: "Budget ID",
         default: "last-used",
       },
+      ...outputFlags,
     },
     positional: {
       kind: "tuple",
@@ -30,7 +33,7 @@ export const getMonthCommand = buildCommand({
     try {
       const client = new YnabClient(config);
       const result = await client.getMonth(budgetId, month);
-      console.log(JSON.stringify(result, null, 2));
+      console.log(formatOutput(result, flags));
     } catch (err) {
       handleError(err);
     }
