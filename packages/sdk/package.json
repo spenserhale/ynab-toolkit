@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "bun build ./src/index.ts --outdir ./dist --target node",
-    "test": "bun test",
+    "test": "bun test --parallel",
     "smoke": "test -n \"$YNAB_API_KEY\" || (echo 'Error: YNAB_API_KEY is required. Set it in your .env file.' >&2 && exit 1) && bun test tests/smoke.test.ts",
     "lint": "tsc --noEmit"
   },
