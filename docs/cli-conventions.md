@@ -10,7 +10,7 @@ Use this guide when adding or changing CLI commands in `packages/cli/`. The CLI 
 - **Structured output.** Every data-returning command exposes three explicit flags via the shared `outputFlags` constant in `packages/cli/src/output.ts`:
   - `--toon` (default) — Token-Oriented Object Notation via `@toon-format/toon`. Token-efficient; optimized for LLM consumers.
   - `--json` — Pretty-printed JSON. Use for jq, scripts, and non-LLM tooling.
-  - `--csv` — CSV output. Supported only on list commands (those returning arrays). On single-object commands, exits with code 2 and this message: `error: --csv requires a list command; this command returns a single object. Use --toon (default) or --json.`
+  - `--csv` — CSV output. Supported only on list commands. List commands return a wrapper object (e.g. `{ transactions: [...], server_knowledge: 123 }`); `formatOutput` auto-extracts the first top-level array property for CSV. On single-object get/mutation commands with no array property, exits with code 2: `error: --csv requires a list command; this command returns a single object. Use --toon (default) or --json.`
 
   Flag precedence (first match wins): `--json` → `--csv` → TOON (implicit default).
 

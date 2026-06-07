@@ -60,6 +60,18 @@ describe("formatOutput", () => {
     expect(result).toBe("");
   });
 
+  it("extracts array from wrapper object for --csv", () => {
+    const data = {
+      transactions: [
+        { id: "t1", amount: -1000 },
+        { id: "t2", amount: 5000 },
+      ],
+      server_knowledge: 42,
+    };
+    const result = formatOutput(data, csv);
+    expect(result).toBe("id,amount\nt1,-1000\nt2,5000");
+  });
+
   it("writes error to stderr and exits 2 for --csv on non-array", () => {
     const exitSpy = spyOn(process, "exit").mockImplementation((_code) => {
       throw new Error("exit:2");

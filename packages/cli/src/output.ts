@@ -35,13 +35,18 @@ function toCsv(rows: Record<string, unknown>[]): string {
 export function formatOutput(data: unknown, flags: OutputFlags): string {
   if (flags.json) return JSON.stringify(data, null, 2);
   if (flags.csv) {
-    if (!Array.isArray(data)) {
+    let csvData: unknown = data;
+    if (!Array.isArray(data) && typeof data === "object" && data !== null) {
+      const arrayProp = Object.values(data as Record<string, unknown>).find(Array.isArray);
+      if (arrayProp !== undefined) csvData = arrayProp;
+    }
+    if (!Array.isArray(csvData)) {
       console.error(
         "error: --csv requires a list command; this command returns a single object. Use --toon (default) or --json."
       );
       process.exit(2);
     }
-    return toCsv(data as Record<string, unknown>[]);
+    return toCsv(csvData as Record<string, unknown>[]);
   }
   // TOON is the default; flags.toon is accepted but not needed (fallthrough always produces TOON)
   return encode(data);
