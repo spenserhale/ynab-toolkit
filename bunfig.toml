@@ -1,3 +1,6 @@
 [test]
-# refs/ contains read-only third-party repos whose deps are not installed
+# refs/ contains read-only third-party repos whose deps are not installed.
+# setup.ts registers a global beforeEach that restores globalThis.fetch before each test,
+# preventing the mock spy from SDK unit tests leaking into the smoke integration test.
 pathIgnorePatterns = ["refs/**"]
+preload = ["./packages/sdk/tests/setup.ts"]
