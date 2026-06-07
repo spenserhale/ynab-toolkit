@@ -7,24 +7,20 @@ import { Fixtures } from "./helpers/fixtures.js";
 const client = new YnabClient({ apiKey: "test-key", baseUrl: "https://api.example.com" });
 
 describe("listBudgets()", () => {
-  it("returns array of budgets with server_knowledge", async () => {
+  it("returns array of budgets from the plans envelope", async () => {
     mockFetch(Fixtures.budgets.list);
     const result = await client.listBudgets();
     expect(result.budgets).toHaveLength(1);
     expect(result.budgets[0]!.id).toBe("budget-1");
-    expect(result.server_knowledge).toBe(100);
   });
 
-  it("passes last_knowledge_of_server as query param", async () => {
-    const spy = mockFetch(Fixtures.budgets.list);
-    await client.listBudgets(50);
-    expect(spy).toHaveBeenCalledWith(
-      "https://api.example.com/plans?last_knowledge_of_server=50",
-      expect.any(Object)
-    );
+  it("exposes the default budget when present", async () => {
+    mockFetch(Fixtures.budgets.list);
+    const result = await client.listBudgets();
+    expect(result.default_budget?.id).toBe("budget-1");
   });
 
-  it("omits query param when not provided", async () => {
+  it("requests /plans without query params", async () => {
     const spy = mockFetch(Fixtures.budgets.list);
     await client.listBudgets();
     expect(spy).toHaveBeenCalledWith(

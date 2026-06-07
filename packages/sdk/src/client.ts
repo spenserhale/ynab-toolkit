@@ -79,27 +79,29 @@ export class YnabClient {
   // Budgets  (GET /plans, GET /plans/{plan_id})
   // -------------------------------------------------------------------------
 
-  async listBudgets(
-    lastKnowledgeOfServer?: number
-  ): Promise<{ budgets: BudgetSummary[]; server_knowledge: number }> {
-    const query =
-      lastKnowledgeOfServer !== undefined
-        ? `?last_knowledge_of_server=${lastKnowledgeOfServer}`
-        : "";
-    const data = await this.request<{ budgets: unknown[]; server_knowledge: number }>(
-      "GET", `/plans${query}`
+  // The list endpoint (GET /plans) is not a delta endpoint — it has no
+  // server_knowledge and returns the user's plans plus an optional default.
+  async listBudgets(): Promise<{
+    budgets: BudgetSummary[];
+    default_budget?: BudgetSummary;
+  }> {
+    const data = await this.request<{ plans: unknown[]; default_plan?: unknown }>(
+      "GET", `/plans`
     );
     return {
-      budgets: BudgetSummarySchema.array().parse(data.budgets),
-      server_knowledge: data.server_knowledge,
+      budgets: BudgetSummarySchema.array().parse(data.plans),
+      default_budget:
+        data.default_plan === undefined || data.default_plan === null
+          ? undefined
+          : BudgetSummarySchema.parse(data.default_plan),
     };
   }
 
   async getBudget(budgetId: string): Promise<BudgetSummary> {
-    const data = await this.request<{ budget: unknown; server_knowledge: number }>(
+    const data = await this.request<{ plan: unknown; server_knowledge: number }>(
       "GET", `/plans/${budgetId}`
     );
-    return BudgetSummarySchema.parse(data.budget);
+    return BudgetSummarySchema.parse(data.plan);
   }
 
   // -------------------------------------------------------------------------

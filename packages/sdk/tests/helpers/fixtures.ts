@@ -1,7 +1,7 @@
 export const Fixtures = {
   budgets: {
     list: {
-      budgets: [
+      plans: [
         {
           id: "budget-1",
           name: "My Budget",
@@ -10,10 +10,16 @@ export const Fixtures = {
           last_month: "2024-12-01",
         },
       ],
-      server_knowledge: 100,
+      default_plan: {
+        id: "budget-1",
+        name: "My Budget",
+        last_modified_on: "2024-01-01T00:00:00Z",
+        first_month: "2024-01-01",
+        last_month: "2024-12-01",
+      },
     },
     get: {
-      budget: {
+      plan: {
         id: "budget-1",
         name: "My Budget",
         last_modified_on: "2024-01-01T00:00:00Z",
