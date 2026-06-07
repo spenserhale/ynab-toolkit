@@ -19,7 +19,7 @@ function toCsv(rows: Record<string, unknown>[]): string {
     if (val === null || val === undefined) return "";
     if (typeof val === "object") {
       const s = JSON.stringify(val);
-      return `"${s}"`;
+      return `"${s.replace(/"/g, '""')}"`;
     }
     const s = String(val);
     return s.includes(",") || s.includes('"') || s.includes("\n")
@@ -43,5 +43,6 @@ export function formatOutput(data: unknown, flags: OutputFlags): string {
     }
     return toCsv(data as Record<string, unknown>[]);
   }
+  // TOON is the default; flags.toon is accepted but not needed (fallthrough always produces TOON)
   return encode(data);
 }

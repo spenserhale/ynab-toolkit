@@ -45,7 +45,8 @@ describe("formatOutput", () => {
     const result = formatOutput(data, csv);
     const lines = result.split("\n");
     expect(lines[0]).toBe("id,meta");
-    expect(lines[1]).toContain('"{"x":1}"');
+    // Valid CSV: internal quotes in JSON are doubled
+    expect(lines[1]).toBe('abc,"{""x"":1}"');
   });
 
   it("quotes CSV values that contain commas", () => {
