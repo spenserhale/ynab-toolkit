@@ -1,8 +1,10 @@
 import { buildCommand } from "@stricli/core";
 import { YnabClient } from "@ynab-toolkit/sdk";
 import { resolveConfigOrExit, handleError } from "../../handle-error.js";
+import { outputFlags, formatOutput } from "../../output.js";
+import type { OutputFlags } from "../../output.js";
 
-interface GetCategoryFlags {
+interface GetCategoryFlags extends OutputFlags {
   readonly "budget-id": string;
 }
 
@@ -16,6 +18,7 @@ export const getCategoryCommand = buildCommand({
         brief: "Budget ID",
         default: "last-used",
       },
+      ...outputFlags,
     },
     positional: {
       kind: "tuple",
@@ -30,7 +33,7 @@ export const getCategoryCommand = buildCommand({
     try {
       const client = new YnabClient(config);
       const result = await client.getCategory(budgetId, categoryId);
-      console.log(JSON.stringify(result, null, 2));
+      console.log(formatOutput(result, flags));
     } catch (err) {
       handleError(err);
     }
