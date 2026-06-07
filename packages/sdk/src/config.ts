@@ -9,5 +9,6 @@ export function resolveConfig(overrides: Partial<YnabConfig> = {}): YnabConfig {
       overrides.baseUrl ??
       process.env["YNAB_BASE_URL"] ??
       "https://api.ynab.com/v1",
+    budgetId: overrides.budgetId ?? process.env["YNAB_BUDGET_ID"],
   };
 }

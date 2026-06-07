@@ -4,6 +4,7 @@ import { resolveConfig } from "../src/config.js";
 describe("resolveConfig", () => {
   const savedKey = process.env["YNAB_API_KEY"];
   const savedUrl = process.env["YNAB_BASE_URL"];
+  const savedBudgetId = process.env["YNAB_BUDGET_ID"];
 
   afterEach(() => {
     if (savedKey === undefined) {
@@ -15,6 +16,11 @@ describe("resolveConfig", () => {
       delete process.env["YNAB_BASE_URL"];
     } else {
       process.env["YNAB_BASE_URL"] = savedUrl;
+    }
+    if (savedBudgetId === undefined) {
+      delete process.env["YNAB_BUDGET_ID"];
+    } else {
+      process.env["YNAB_BUDGET_ID"] = savedBudgetId;
     }
   });
 
@@ -42,5 +48,23 @@ describe("resolveConfig", () => {
   it("throws when API key is empty", () => {
     process.env["YNAB_API_KEY"] = "";
     expect(() => resolveConfig()).toThrow();
+  });
+
+  it("reads YNAB_BUDGET_ID from env", () => {
+    process.env["YNAB_API_KEY"] = "my-key";
+    process.env["YNAB_BUDGET_ID"] = "budget-abc";
+    expect(resolveConfig().budgetId).toBe("budget-abc");
+  });
+
+  it("budgetId is undefined when YNAB_BUDGET_ID is not set", () => {
+    process.env["YNAB_API_KEY"] = "my-key";
+    delete process.env["YNAB_BUDGET_ID"];
+    expect(resolveConfig().budgetId).toBeUndefined();
+  });
+
+  it("allows budgetId override via argument", () => {
+    process.env["YNAB_API_KEY"] = "my-key";
+    process.env["YNAB_BUDGET_ID"] = "budget-from-env";
+    expect(resolveConfig({ budgetId: "budget-override" }).budgetId).toBe("budget-override");
   });
 });
