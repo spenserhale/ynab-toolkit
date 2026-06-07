@@ -57,3 +57,15 @@ cd packages/sdk && bun run build
 2. Add the client method to `packages/sdk/src/client.ts`
 3. Add a CLI command in `packages/cli/src/commands/`
 4. Add an MCP tool in `packages/mcp/src/tools/`
+
+## Agent Skills
+
+This repo bundles a `ynab-cli` agent skill at [`.agents/skills/ynab-cli`](./.agents/skills/ynab-cli/SKILL.md). It teaches AI coding agents (Claude Code, Cursor, etc.) how to drive the `ynab` CLI correctly — the command surface, milliunit amounts, budget IDs, dry-run/idempotency safety flags, and exit codes.
+
+Add it to another project with the [`skills`](https://www.npmjs.com/package/skills) CLI:
+
+```bash
+npx skills add github.com/spenserhale/ynab-toolkit/.agents/skills/ynab-cli
+```
+
+Agents working in this repo pick it up automatically via the `.agents/skills/` directory — no install step needed.
