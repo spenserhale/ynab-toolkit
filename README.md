@@ -4,6 +4,14 @@ SDK, CLI, and MCP server for YNAB (You Need a Budget)
 
 A monorepo containing the SDK, CLI, and MCP server for the Ynab API.
 
+## Install the CLI
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/spenserhale/ynab-toolkit/main/scripts/install.sh | sh
+```
+
+The checksum-verified installer places `ynab` in `$HOME/.local/bin`.
+
 ## Packages
 
 | Package | Description |
