@@ -25,11 +25,31 @@ import { importLinkedTransactionsCommand } from "./commands/transactions/import-
 import { listScheduledTransactionsCommand } from "./commands/scheduled-transactions/list.js";
 import { getScheduledTransactionCommand } from "./commands/scheduled-transactions/get.js";
 
+import { authSetCommand } from "./commands/auth/set.js";
+import { authListCommand } from "./commands/auth/list.js";
+import { authDeleteCommand } from "./commands/auth/delete.js";
+import { authMigrateCommand } from "./commands/auth/migrate.js";
+
+import { showConfigCommand } from "./commands/config/show.js";
+
 import { listMonthsCommand } from "./commands/months/list.js";
 import { getMonthCommand } from "./commands/months/get.js";
 
 const routes = buildRouteMap({
   routes: {
+    auth: buildRouteMap({
+      routes: {
+        set: authSetCommand,
+        list: authListCommand,
+        delete: authDeleteCommand,
+        migrate: authMigrateCommand,
+      },
+      docs: { brief: "Store, list, delete, and migrate credentials in the OS keychain" },
+    }),
+    config: buildRouteMap({
+      routes: { show: showConfigCommand },
+      docs: { brief: "Inspect resolved configuration (secrets redacted)" },
+    }),
     budgets: buildRouteMap({
       routes: { list: listBudgetsCommand, get: getBudgetCommand },
       docs: { brief: "List and get budgets" },
@@ -79,5 +99,5 @@ const routes = buildRouteMap({
 
 export const app = buildApplication(routes, {
   name: "ynab",
-  versionInfo: { currentVersion: "0.1.0" },
+  versionInfo: { currentVersion: "0.2.0" },
 });

@@ -6,7 +6,7 @@ Use this guide when adding or changing CLI commands in `packages/cli/`. The CLI 
 
 ## Policy
 
-- **Non-interactive by default.** No prompts in normal operation. Require `--yes`/`--force` to confirm destructive operations.
+- **Non-interactive by default.** No prompts in normal operation. The one exception is `auth set` on a TTY, which prompts with hidden input; without a TTY it requires `--stdin` and never reads stdin implicitly. Require `--yes`/`--force` to confirm destructive operations.
 - **Structured output.** Every data-returning command exposes three explicit flags via the shared `outputFlags` constant in `packages/cli/src/output.ts`:
   - `--toon` (default) — Token-Oriented Object Notation via `@toon-format/toon`. Token-efficient; optimized for LLM consumers.
   - `--json` — Pretty-printed JSON. Use for jq, scripts, and non-LLM tooling.
@@ -31,7 +31,7 @@ Use this guide when adding or changing CLI commands in `packages/cli/`. The CLI 
 ## Implementation notes
 
 - Commands live one-per-file under `packages/cli/src/commands/` and are registered in `src/app.ts` via `buildRouteMap`. Keep the route map organized by YNAB entity (e.g. `transactions`, `accounts`, `categories`, `budgets`) once the placeholder `resources` group is replaced.
-- Commands stay thin: resolve config, construct `YnabClient`, call one SDK method, format output. **No API logic in the CLI** — if you're reaching for `fetch` or building a URL in a command, it belongs in the SDK.
+- Commands stay thin: resolve config with `await loadConfigOrExit()` (env > `.env` > OS keychain), construct `YnabClient`, call one SDK method, format output. **No API logic in the CLI** — if you're reaching for `fetch` or building a URL in a command, it belongs in the SDK.
 - Catch SDK typed errors (`YnabError`, `YnabAuthError`, `YnabNotFoundError`, and a future `YnabRateLimitError`) and translate them to the exit codes above — don't let raw errors set a blanket exit `1`.
 - Display-format milliunits → currency only at the human-output edge (see `docs/ynab-api.md`). `--json` output should preserve raw milliunit integers so downstream tools get exact values.
 

@@ -11,7 +11,7 @@
     },
     "packages/cli": {
       "name": "@ynab-toolkit/cli",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "bin": {
         "ynab": "src/bin.ts",
       },
@@ -27,8 +27,9 @@
     },
     "packages/mcp": {
       "name": "@ynab-toolkit/mcp",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "dependencies": {
+        "@toon-format/toon": "^2.3.0",
         "@ynab-toolkit/sdk": "workspace:*",
         "fastmcp": "^3.0.0",
         "zod": "^3.24.0",
@@ -40,7 +41,7 @@
     },
     "packages/sdk": {
       "name": "@ynab-toolkit/sdk",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "dependencies": {
         "zod": "^3.24.0",
       },

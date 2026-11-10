@@ -3,18 +3,23 @@ import {
   YnabNotFoundError,
   YnabRateLimitError,
   YnabValidationError,
+  YnabConfigError,
   YnabError,
-  resolveConfig,
+  loadConfig,
 } from "@ynab-toolkit/sdk";
-import type { YnabConfig } from "@ynab-toolkit/sdk";
+import type { ResolvedConfig } from "@ynab-toolkit/sdk";
 
-export function resolveConfigOrExit(): YnabConfig {
+/** Resolve config (env > .env > OS keychain) or exit 3 with a hint. */
+export async function loadConfigOrExit(): Promise<ResolvedConfig> {
   try {
-    return resolveConfig();
-  } catch {
-    console.error("Config error: YNAB_API_KEY is required. Set it in your .env file.");
-    process.exit(3);
+    return await loadConfig();
+  } catch (err) {
+    handleError(err);
   }
+}
+
+function printHint(hint: string | undefined): void {
+  if (hint) console.error(`hint: ${hint}`);
 }
 
 export function handleError(err: unknown): never {
@@ -32,7 +37,13 @@ export function handleError(err: unknown): never {
   }
   if (err instanceof YnabValidationError) {
     console.error(`Validation error: ${err.message}`);
+    printHint(err.hint);
     process.exit(2);
+  }
+  if (err instanceof YnabConfigError) {
+    console.error(`Config error: ${err.message}${err.got ? ` (${err.got})` : ""}`);
+    printHint(err.hint);
+    process.exit(3);
   }
   if (err instanceof YnabError) {
     console.error(`API error: ${err.message}`);

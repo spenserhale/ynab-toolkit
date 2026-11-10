@@ -1,6 +1,6 @@
 import { buildCommand } from "@stricli/core";
 import { YnabClient } from "@ynab-toolkit/sdk";
-import { resolveConfigOrExit, handleError } from "../../handle-error.js";
+import { loadConfigOrExit, handleError } from "../../handle-error.js";
 import { outputFlags, formatOutput } from "../../output.js";
 import type { OutputFlags } from "../../output.js";
 
@@ -49,7 +49,7 @@ export const updateTransactionCommand = buildCommand({
       console.log(formatOutput({ dry_run: true, transaction_id: transactionId, transaction: params }, flags));
       process.exit(0);
     }
-    const config = resolveConfigOrExit();
+    const config = await loadConfigOrExit();
     const budgetId = flags["budget-id"] !== "last-used"
       ? flags["budget-id"]
       : (config.budgetId ?? "last-used");

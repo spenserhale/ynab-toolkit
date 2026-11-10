@@ -30,10 +30,27 @@ export class YnabRateLimitError extends YnabError {
   }
 }
 
+/** Missing or unusable configuration: no API key, unreadable keychain, bad env value. */
+export class YnabConfigError extends YnabError {
+  public readonly hint?: string;
+  public readonly got?: string;
+
+  constructor(message: string, options: { hint?: string; got?: string; cause?: unknown } = {}) {
+    super(message, "CONFIG_ERROR");
+    this.name = "YnabConfigError";
+    this.hint = options.hint;
+    this.got = options.got;
+    if (options.cause !== undefined) this.cause = options.cause;
+  }
+}
+
 /** Input rejected before any request was sent (bad flag, bad import row). */
 export class YnabValidationError extends YnabError {
-  constructor(message: string) {
+  public readonly hint?: string;
+
+  constructor(message: string, options: { hint?: string } = {}) {
     super(message, "VALIDATION_ERROR");
     this.name = "YnabValidationError";
+    this.hint = options.hint;
   }
 }

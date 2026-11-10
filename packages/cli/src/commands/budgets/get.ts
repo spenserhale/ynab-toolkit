@@ -1,6 +1,6 @@
 import { buildCommand } from "@stricli/core";
 import { YnabClient } from "@ynab-toolkit/sdk";
-import { resolveConfigOrExit, handleError } from "../../handle-error.js";
+import { loadConfigOrExit, handleError } from "../../handle-error.js";
 import { outputFlags, formatOutput } from "../../output.js";
 import type { OutputFlags } from "../../output.js";
 
@@ -14,7 +14,7 @@ export const getBudgetCommand = buildCommand({
     },
   },
   async func(this: void, flags: OutputFlags, budgetId: string) {
-    const config = resolveConfigOrExit();
+    const config = await loadConfigOrExit();
     try {
       const client = new YnabClient(config);
       const result = await client.getBudget(budgetId);

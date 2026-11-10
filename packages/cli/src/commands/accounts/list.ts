@@ -1,7 +1,7 @@
 import { buildCommand } from "@stricli/core";
 import { YnabClient, filterAccounts } from "@ynab-toolkit/sdk";
 import type { AccountType } from "@ynab-toolkit/sdk";
-import { resolveConfigOrExit, handleError } from "../../handle-error.js";
+import { loadConfigOrExit, handleError } from "../../handle-error.js";
 import { outputFlags, formatOutput } from "../../output.js";
 import type { OutputFlags } from "../../output.js";
 import { accountView } from "../../account-view.js";
@@ -61,7 +61,7 @@ export const listAccountsCommand = buildCommand({
     },
   },
   async func(this: void, flags: ListAccountsFlags) {
-    const config = resolveConfigOrExit();
+    const config = await loadConfigOrExit();
     const budgetId = flags["budget-id"] !== "last-used"
       ? flags["budget-id"]
       : (config.budgetId ?? "last-used");

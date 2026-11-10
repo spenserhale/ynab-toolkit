@@ -36,9 +36,23 @@ bun run dev:cli -- --help
 bun run dev:mcp
 ```
 
+## Credentials
+
+The toolkit needs `YNAB_API_KEY`, a YNAB Personal Access Token. Store it in the OS keychain once, and the CLI and MCP server both find it with no `.env` file and no MCP `env` block:
+
+```bash
+ynab auth set ynab                                  # hidden prompt
+pbpaste | ynab auth set ynab --stdin                # non-interactive
+op read 'op://Private/YNAB/token' | ynab auth set ynab --stdin
+ynab auth list                                      # keychain state and active source, never values
+ynab auth migrate --dry-run                         # copy a key out of .env into the keychain
+```
+
+Lookup order: process env, then the nearest `.env`, then the OS keychain (`Bun.secrets`: macOS Keychain, libsecret, Windows Credential Manager). Explicit per-project values win, so `op run` and CI work as before. See [the configuration guide](./docs/guides/configuration.md) for setup, caveats and `YNAB_KEYCHAIN=0`.
+
 ## Using the CLI
 
-Copy `.env.example` to `.env` and set `YNAB_API_KEY` (a YNAB Personal Access Token). All amounts are milliunits: `1000` is $1.00 and `-12340` is a $12.34 outflow.
+All amounts are milliunits: `1000` is $1.00 and `-12340` is a $12.34 outflow.
 
 ### Accounts
 
@@ -86,7 +100,30 @@ These are not available in the API (checked against the YNAB OpenAPI spec v1.90.
 - **Triggering a bank import is deprecated.** YNAB marks `POST /plans/{id}/transactions/import` deprecated and documents an always-empty response, since linked accounts import automatically. The toolkit still wraps it as `ynab transactions import-linked`, a fallback for linked accounts that have not synced. It never imports accounts without a bank connection. Use `transactions import --file` for those.
 - **Rate limit:** 200 requests per hour per token. Use `--knowledge` on list commands so repeated runs only fetch what changed.
 
-The MCP server in `packages/mcp` is still a scaffold, so these operations are available only through the SDK and the CLI for now.
+## Using the MCP server
+
+The MCP server exposes read-only tools (`ynab_config_status`, `ynab_list_budgets`, `ynab_list_accounts`, `ynab_list_categories`, `ynab_list_payees`, `ynab_list_transactions`, `ynab_get_month`). It reads the key from the keychain on every call, so a rotated key applies without restarting the host. With the key in the keychain, the host config needs no `env` block:
+
+```json
+{
+  "mcpServers": {
+    "ynab": { "command": "bun", "args": ["run", "/abs/path/ynab-toolkit/packages/mcp/src/index.ts"] }
+  }
+}
+```
+
+The server has no tool that writes or deletes secrets. Use `ynab auth` in a terminal for that.
+
+## Using the SDK
+
+```ts
+import { loadConfig, YnabClient } from "@ynab-toolkit/sdk";
+
+const config = await loadConfig();          // env > .env > OS keychain; throws YnabConfigError if no key
+const client = new YnabClient(config);
+```
+
+`resolveConfig()` stays synchronous and skips the keychain. `loadConfig({ secretStore })` accepts any `SecretStore` (pass `null` to skip the keychain); `bunSecretStore()` is the OS keychain. The keychain lookup needs the Bun runtime; under Node it reports `unavailable` and env keys still work.
 
 ## Architecture
 

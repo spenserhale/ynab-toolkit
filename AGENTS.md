@@ -24,7 +24,7 @@ bun run --filter '@ynab-toolkit/sdk' build
 bun run --filter '@ynab-toolkit/mcp' inspect   # FastMCP inspector
 ```
 
-Config: copy `.env.example` → `.env` and set `YNAB_API_KEY` (a YNAB Personal Access Token). See `docs/ynab-api.md` for how to get one.
+Config: store `YNAB_API_KEY` (a YNAB Personal Access Token) with `bun run cli auth set ynab`, or copy `.env.example` → `.env` and set it there. See `docs/guides/configuration.md` for precedence and `docs/ynab-api.md` for how to get a token.
 
 ## Repo layout
 
@@ -32,12 +32,14 @@ Config: copy `.env.example` → `.env` and set `YNAB_API_KEY` (a YNAB Personal A
 packages/sdk/        Foundation: Zod types, HTTP client, config resolver, typed errors
   src/types.ts         Zod schemas + inferred types (the public type surface)
   src/client.ts        YnabClient — wraps fetch, throws typed errors
-  src/config.ts        resolveConfig() — env vars -> validated config
-  src/errors.ts        YnabError / YnabAuthError / YnabNotFoundError
+  src/config.ts        loadConfig() (async: env > .env > OS keychain) and resolveConfig() (sync, no keychain)
+  src/secrets.ts       SecretStore interface, bunSecretStore() (Bun.secrets), credential key list
+  src/errors.ts        YnabError / YnabAuthError / YnabConfigError / YnabNotFoundError / ...
   src/index.ts         Public exports (cross-package imports come from HERE only)
 packages/cli/        Stricli CLI — thin consumer of the SDK
   src/app.ts           Route map
-  src/commands/        One file per command
+  src/commands/        One file per command (auth/* manage keychain credentials)
+  src/lib/             auth.ts (testable auth logic, injected SecretStore), prompt.ts (hidden TTY prompt)
 packages/mcp/        FastMCP stdio server — thin consumer of the SDK
   src/index.ts         Server bootstrap
   src/tools/           Tool group registrations
@@ -55,13 +57,14 @@ docs/                Policy docs (see Progressive disclosure below)
 
 **CLI:** All data-returning commands support `--toon` (default), `--json`, and `--csv` flags via the shared `outputFlags` / `formatOutput` utility in `packages/cli/src/output.ts`. TOON (`@toon-format/toon`) is the default — token-efficient for LLM consumers.
 
-**MCP (draft):** MCP tools should return TOON-formatted strings by default using `encode(result)` from `@toon-format/toon`, with raw JSON available where the MCP client requests it. This is the target convention; implement it when MCP tools are wired up.
+**MCP:** tools return TOON strings by default (`encode(result)` from `@toon-format/toon`) and JSON when called with `format: "json"`. All tools are read-only; never add an MCP tool that writes or deletes secrets.
 
 ## Progressive disclosure
 
 Before editing, check whether your task touches one of these areas and read the referenced doc first:
 
 - **Anything calling the YNAB API** (client methods, schemas, auth, amounts, syncing): read `docs/ynab-api.md` — milliunits, Personal Access Token auth, the `/v1` base URL, rate limits, delta requests, and the entity model. The placeholder scaffold gets several of these wrong; this doc is the corrective.
+- **Config, credentials, or the `auth` commands**: read `docs/guides/configuration.md` and `docs/decisions/0001-os-keychain-credential-store.md`. Commands and tools call `await loadConfig()`, never `resolveConfig()`. Tests must never touch the real keychain: inject an in-memory `SecretStore`, and set `YNAB_KEYCHAIN=0` in the env of every spawned CLI or MCP process.
 - **Adding or changing CLI commands**: read `docs/cli-conventions.md` — the agent-native design system (structured output, enumerated exit codes, `--dry-run`, introspection) and the gap between it and the current scaffold.
 
 ## Done criteria

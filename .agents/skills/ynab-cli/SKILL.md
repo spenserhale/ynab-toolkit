@@ -11,7 +11,7 @@ Use this skill to invoke the CLI correctly the first time: right run command, ri
 
 ## Prerequisites
 
-- **Auth:** the CLI needs `YNAB_API_KEY` (a YNAB Personal Access Token). It is read from the repo-root `.env` (symlinked into each package). Copy `.env.example` → `.env` and set the token. Without it the CLI exits `3` with `Config error: YNAB_API_KEY is required`. Get a token at YNAB → Account Settings → Developer Settings → New Token.
+- **Auth:** the CLI needs `YNAB_API_KEY` (a YNAB Personal Access Token). It looks in process env, then the nearest `.env`, then the OS keychain (service `ynab-toolkit`). Check with `bun run cli auth list` (never prints values). To store a token non-interactively, pipe it: `printf '%s' "$TOKEN" | bun run cli auth set ynab --stdin`; never pass it as an argument. Without a key the CLI exits `3` with `Config error: YNAB_API_KEY is required` and a hint. Get a token at YNAB → Account Settings → Developer Settings → New Token.
 - **Runtime:** Bun. Run `bun install` once at the repo root.
 
 ## Running the CLI
@@ -34,6 +34,11 @@ All commands print JSON on success. `--budget-id` defaults to `last-used` (YNAB'
 
 | Command | Args | Notes |
 |---|---|---|
+| `auth set ynab` | `--stdin`, `--key`, `--dry-run` | Store the token in the OS keychain. Hidden prompt on a TTY; agents must use `--stdin`. Exits 2 with no TTY and no `--stdin`. |
+| `auth list` | `--text`, `--csv` | Keychain state and active source per key; no values. |
+| `auth delete ynab` | `--yes`, `--dry-run` | Removes the keychain entry. Requires `--yes`. |
+| `auth migrate` | `--dry-run`, `--overwrite` | Copies `.env` keys into the keychain; lists `clean_up` files; never edits files. |
+| `config show` | — | Resolved config, sources, keychain status; secrets redacted. |
 | `budgets list` | — | Returns `{ budgets, default_budget? }`. Not a delta endpoint. |
 | `budgets get <budget-id>` | positional id (or `last-used`) | |
 | `accounts list` | `--budget-id`, `--open`, `--on-budget`, `--type <t,...>`, `--unlinked`, `--link-error`, `--include-deleted`, `--knowledge <n>` | Each row has `link_status` (`linked`, `error`, `unlinked`). Deleted accounts hidden by default. |
