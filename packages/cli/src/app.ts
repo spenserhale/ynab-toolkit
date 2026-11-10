@@ -5,6 +5,7 @@ import { getBudgetCommand } from "./commands/budgets/get.js";
 
 import { listAccountsCommand } from "./commands/accounts/list.js";
 import { getAccountCommand } from "./commands/accounts/get.js";
+import { createAccountCommand } from "./commands/accounts/create.js";
 
 import { listCategoriesCommand } from "./commands/categories/list.js";
 import { getCategoryCommand } from "./commands/categories/get.js";
@@ -18,6 +19,8 @@ import { getTransactionCommand } from "./commands/transactions/get.js";
 import { createTransactionCommand } from "./commands/transactions/create.js";
 import { updateTransactionCommand } from "./commands/transactions/update.js";
 import { deleteTransactionCommand } from "./commands/transactions/delete.js";
+import { importTransactionsCommand } from "./commands/transactions/import.js";
+import { importLinkedTransactionsCommand } from "./commands/transactions/import-linked.js";
 
 import { listScheduledTransactionsCommand } from "./commands/scheduled-transactions/list.js";
 import { getScheduledTransactionCommand } from "./commands/scheduled-transactions/get.js";
@@ -32,8 +35,8 @@ const routes = buildRouteMap({
       docs: { brief: "List and get budgets" },
     }),
     accounts: buildRouteMap({
-      routes: { list: listAccountsCommand, get: getAccountCommand },
-      docs: { brief: "List and get accounts" },
+      routes: { list: listAccountsCommand, get: getAccountCommand, create: createAccountCommand },
+      docs: { brief: "List, get, and create accounts" },
     }),
     categories: buildRouteMap({
       routes: {
@@ -54,8 +57,10 @@ const routes = buildRouteMap({
         create: createTransactionCommand,
         update: updateTransactionCommand,
         delete: deleteTransactionCommand,
+        import: importTransactionsCommand,
+        "import-linked": importLinkedTransactionsCommand,
       },
-      docs: { brief: "List, get, create, update, and delete transactions" },
+      docs: { brief: "List, get, create, import, update, and delete transactions" },
     }),
     "scheduled-transactions": buildRouteMap({
       routes: {

@@ -3,6 +3,7 @@ import { YnabClient } from "@ynab-toolkit/sdk";
 import { resolveConfigOrExit, handleError } from "../../handle-error.js";
 import { outputFlags, formatOutput } from "../../output.js";
 import type { OutputFlags } from "../../output.js";
+import { accountView } from "../../account-view.js";
 
 interface GetAccountFlags extends OutputFlags {
   readonly "budget-id": string;
@@ -33,7 +34,7 @@ export const getAccountCommand = buildCommand({
     try {
       const client = new YnabClient(config);
       const result = await client.getAccount(budgetId, accountId);
-      console.log(formatOutput(result, flags));
+      console.log(formatOutput(accountView(result), flags));
     } catch (err) {
       handleError(err);
     }

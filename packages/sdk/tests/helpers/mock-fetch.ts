@@ -28,3 +28,19 @@ afterEach(() => {
   // never survives into the next test within the same worker.
   globalThis.fetch = _realFetch;
 });
+
+/** Respond to successive fetch calls with these `{ status, data }` payloads in order. */
+export function mockFetchSequence(responses: { data: unknown; status?: number }[]) {
+  let i = 0;
+  activeSpy = spyOn(globalThis, "fetch").mockImplementation(() => {
+    const next = responses[Math.min(i, responses.length - 1)]!;
+    i += 1;
+    return Promise.resolve(
+      new Response(JSON.stringify({ data: next.data }), {
+        status: next.status ?? 200,
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+  });
+  return activeSpy;
+}

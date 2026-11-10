@@ -29,3 +29,11 @@ export class YnabRateLimitError extends YnabError {
     this.name = "YnabRateLimitError";
   }
 }
+
+/** Input rejected before any request was sent (bad flag, bad import row). */
+export class YnabValidationError extends YnabError {
+  constructor(message: string) {
+    super(message, "VALIDATION_ERROR");
+    this.name = "YnabValidationError";
+  }
+}

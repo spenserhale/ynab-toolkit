@@ -2,6 +2,7 @@ import {
   YnabAuthError,
   YnabNotFoundError,
   YnabRateLimitError,
+  YnabValidationError,
   YnabError,
   resolveConfig,
 } from "@ynab-toolkit/sdk";
@@ -28,6 +29,10 @@ export function handleError(err: unknown): never {
   if (err instanceof YnabRateLimitError) {
     console.error(`Rate limit exceeded: ${err.message}`);
     process.exit(6);
+  }
+  if (err instanceof YnabValidationError) {
+    console.error(`Validation error: ${err.message}`);
+    process.exit(2);
   }
   if (err instanceof YnabError) {
     console.error(`API error: ${err.message}`);
